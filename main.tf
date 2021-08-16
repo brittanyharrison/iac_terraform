@@ -1,6 +1,6 @@
 # define the region to launch the ec2 instance in Ireland
 provider "aws" {
-	region = "eu-west-1"
+	region = var.region
 }
 
 resource "aws_instance" "app_instance"{
@@ -8,7 +8,7 @@ resource "aws_instance" "app_instance"{
 	ami = "ami-038d7b856fe7557b3"
 
 	# Let's add the type of instance we would like launch
-	instance_type = "t2.micro"
+	instance_type = var.instance_type
 
     # Need to enable public IP for our app
     associate_public_ip_address = true
@@ -18,6 +18,13 @@ resource "aws_instance" "app_instance"{
         Name = "eng89_brittany_terraform"
     } 
 
-    key_name = "brittany_aws"
+    key_name = var.aws_key_name
 }
 
+resource "aws_vpc" "main" {
+  cidr_block = "10.104.0.0/16"
+
+  tags = {
+      Name = "eng89_brittany_vpc_terraform"
+  }
+}

@@ -128,3 +128,50 @@ resource "aws_instance" "app_instance"{
 
 ```
 - Now run `terraform plan` the `terraform apply`
+
+#### Variables 
+Here we will be setting all the variables needed to create the VPC. It is good practice as it uses **DRY**. 
+
+ Variables can be defined in a separate file `variables.tf` and then referenced in the `main.tf` files using `var.resource_name`.
+
+```
+variable "aws_key_name" {
+    default = "eng89_brittany"
+}
+
+variable "aws_key_path" {
+    default = "~/.ssh/eng89_brittany.pem"
+}
+
+variable "region" {
+    default = "eu-west -1"
+}
+
+variable "instance_type"{
+    default = "t2.micro"
+}
+
+```
+
+#### Creating a VPC using Terraform 
+
+For detailed steps on how to configure the vpc follow this [link](https://github.com/brittanyharrison/aws_VPC/blob/main/README.md#creating-and-setting-up-vpc)
+
+To configure your VPC, several resources are required:
+- [IPv4 CIDRblock](https://github.com/brittanyharrison/aws_VPC#step-1-create-a-vpc)
+- [Internet Gateway](https://github.com/brittanyharrison/aws_VPC#step-2-create-internet-gateway)
+- [Subnet](https://github.com/brittanyharrison/aws_VPC#step-3-creating-a-subnet)
+- [Route Table](https://github.com/brittanyharrison/aws_VPC#step-4-creating-a-route-table) 
+- [Network ACL](https://github.com/brittanyharrison/aws_VPC/blob/main/README.md#step-4-creating-network-acl)
+- [Security Groups](https://github.com/brittanyharrison/aws_VPC/blob/main/README.md#step-5-creating-security-groups)
+
+**IPv4 CIDRblock:**
+```
+resource "aws_vpc" "main" {
+  cidr_block = "10.104.0.0/16"
+
+  tags = {
+      Name = "eng89_brittany_vpc_terraform"
+  }
+}
+```
