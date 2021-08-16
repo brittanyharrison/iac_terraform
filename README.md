@@ -154,6 +154,7 @@ variable "instance_type"{
 ```
 
 #### Creating a VPC using Terraform 
+![img](img/VPc-1.jpg)
 
 For detailed steps on how to configure the vpc follow this [link](https://github.com/brittanyharrison/aws_VPC/blob/main/README.md#creating-and-setting-up-vpc)
 
@@ -163,7 +164,13 @@ To configure your VPC, several resources are required:
 - [Subnet](https://github.com/brittanyharrison/aws_VPC#step-3-creating-a-subnet)
 - [Route Table](https://github.com/brittanyharrison/aws_VPC#step-4-creating-a-route-table) 
 - [Network ACL](https://github.com/brittanyharrison/aws_VPC/blob/main/README.md#step-4-creating-network-acl)
+Inbound rules:
+![img](img/Nacl_inbound_rules_public.png)
+Outbound rules:
+![img](img/nacl_outbound_rules_public.png)
 - [Security Groups](https://github.com/brittanyharrison/aws_VPC/blob/main/README.md#step-5-creating-security-groups)
+Inbound rules:
+![img](img/sg_inbound.png)
 
 **IPv4 CIDRblock:**
 ```
