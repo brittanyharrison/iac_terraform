@@ -169,9 +169,127 @@ To configure your VPC, several resources are required:
 ```
 resource "aws_vpc" "main" {
   cidr_block = "10.104.0.0/16"
+  instance_tenancy = "default"
 
   tags = {
-      Name = "eng89_brittany_vpc_terraform"
+      Name = "eng89_brittany_vpc"
+  }
+}
+```
+**Internet Gateway:**
+```
+resource "aws_internet_gateway" "gw" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "eng89_brittany_igw"
+  }
+}
+```
+**Public Subnet:**
+```
+resource "aws_subnet" "main" {
+  vpc_id     = "vpc id"
+  cidr_block = "10.104.1.0/24"
+  availability_zone = "eu-west-1a"
+
+  tags = {
+    Name = "eng89_brittany_subnet_public"
+  }
+}
+```
+**Route Table:**
+```
+resource "aws_route_table" "example" {
+  vpc_id = aws_vpc.example.id
+
+  route = [
+    {
+      cidr_block = "10.104.1.0/24"
+      gateway_id = aws_internet_gateway.example.id
+    },
+    {
+      ipv6_cidr_block        = "::/0"
+      egress_only_gateway_id = aws_egress_only_internet_gateway.example.id
+    }
+  ]
+
+  tags = {
+    Name = "eng89_brittany_rt"
+  }
+}
+```
+
+**Route table association:**
+```
+resource "aws_route_table_association" "b" {
+  gateway_id     = aws_internet_gateway.foo.id
+  route_table_id = aws_route_table.bar.id
+  subnet_id = aws_subnet.foo.id
+}
+```
+**Network ACL**
+```
+resource "aws_network_acl" "main" {
+  vpc_id = aws_vpc.main.id
+
+  egress = [
+    {
+      protocol   = "tcp"
+      rule_no    = 200
+      action     = "allow"
+      cidr_block = "10.3.0.0/18"
+      from_port  = 443
+      to_port    = 443
+    }
+  ]
+
+  ingress = [
+    {
+      protocol   = "tcp"
+      rule_no    = 100
+      action     = "allow"
+      cidr_block = "10.3.0.0/18"
+      from_port  = 80
+      to_port    = 80
+    }
+  ]
+
+  tags = {
+    Name = "eng89_brittany"
+  }
+}
+```
+**Security groups**
+```
+resource "aws_security_group" "allow_tls" {
+  name        = "allow_tls"
+  description = "Allow TLS inbound traffic"
+  vpc_id      = aws_vpc.main.id
+
+  ingress = [
+    {
+      description      = "TLS from VPC"
+      from_port        = 443
+      to_port          = 443
+      protocol         = "tcp"
+      cidr_blocks      = [aws_vpc.main.cidr_block]
+      ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
+    }
+  ]
+
+  egress = [
+    {
+      from_port        = 0
+      to_port          = 0
+      protocol         = "-1"
+      cidr_blocks      = ["0.0.0.0/0"]
+      ipv6_cidr_blocks = ["::/0"]
+    }
+  ]
+
+  tags = {
+    Name = "allow_tls"
   }
 }
 ```
