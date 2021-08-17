@@ -174,7 +174,7 @@ Inbound rules:
 
 **IPv4 CIDRblock:**
 ```
-resource "aws_vpc" "main" {
+resource "aws_vpc" "eng89_brittany_vpc" {
   cidr_block = "10.104.0.0/16"
   instance_tenancy = "default"
 
@@ -185,8 +185,8 @@ resource "aws_vpc" "main" {
 ```
 **Internet Gateway:**
 ```
-resource "aws_internet_gateway" "gw" {
-  vpc_id = aws_vpc.main.id
+resource "aws_internet_gateway" "eng89_brittany_igw" {
+  vpc_id = aws_vpc.eng89_brittany_vpc.id
 
   tags = {
     Name = "eng89_brittany_igw"
@@ -195,9 +195,10 @@ resource "aws_internet_gateway" "gw" {
 ```
 **Public Subnet:**
 ```
-resource "aws_subnet" "main" {
-  vpc_id     = "vpc id"
+resource "aws_subnet" "eng89_brittany_subnet_public" {
+  vpc_id     = aws_vpc.eng89_brittany_vpc.id
   cidr_block = "10.104.1.0/24"
+  map_public_ip_on_launch = true
   availability_zone = "eu-west-1a"
 
   tags = {
@@ -207,17 +208,13 @@ resource "aws_subnet" "main" {
 ```
 **Route Table:**
 ```
-resource "aws_route_table" "example" {
-  vpc_id = aws_vpc.example.id
+resource "aws_route_table" "eng89_brittany_rt" {
+  vpc_id = aws_vpc.eng89_brittany_vpc.id
 
   route = [
     {
-      cidr_block = "10.104.1.0/24"
-      gateway_id = aws_internet_gateway.example.id
-    },
-    {
-      ipv6_cidr_block        = "::/0"
-      egress_only_gateway_id = aws_egress_only_internet_gateway.example.id
+      cidr_block = "0.0.0.0/0"
+      gateway_id = aws_internet_gateway.eng89_brittany_rt.id
     }
   ]
 
@@ -229,7 +226,7 @@ resource "aws_route_table" "example" {
 
 **Route table association:**
 ```
-resource "aws_route_table_association" "b" {
+resource "aws_route_table_association" "eng89_brittany_subnet_assoc" {
   gateway_id     = aws_internet_gateway.foo.id
   route_table_id = aws_route_table.bar.id
   subnet_id = aws_subnet.foo.id
@@ -237,30 +234,80 @@ resource "aws_route_table_association" "b" {
 ```
 **Network ACL**
 ```
-resource "aws_network_acl" "main" {
+resource "aws_network_acl" "eng89_brittany_nacl_public" {
   vpc_id = aws_vpc.main.id
-
-  egress = [
-    {
-      protocol   = "tcp"
-      rule_no    = 200
-      action     = "allow"
-      cidr_block = "10.3.0.0/18"
-      from_port  = 443
-      to_port    = 443
-    }
-  ]
 
   ingress = [
     {
       protocol   = "tcp"
       rule_no    = 100
       action     = "allow"
-      cidr_block = "10.3.0.0/18"
+      cidr_block = "0.0.0.0/0"
       from_port  = 80
       to_port    = 80
     }
   ]
+
+  	ingress {
+		protocol = "tcp"
+		rule_no = 110
+		action = "allow"
+		cidr_block = "0.0.0.0/0"
+		from_port = 443
+		to_port = 443
+	}
+
+  	ingress 
+    
+    {
+		protocol = "tcp"
+		rule_no = 120
+		action = "allow"
+		cidr_block = "${var.my_ip}/32"
+		from_port = 22
+		to_port = 22
+	}
+
+    ingress {
+		protocol = "tcp"
+		rule_no = 130
+		action = "allow"
+		cidr_block = "0.0.0.0/0"
+		from_port = 1024
+		to_port = 65535
+	}
+	
+
+  egress = [
+    {
+      protocol   = "tcp"
+      rule_no    = 100
+      action     = "allow"
+      cidr_block = "0.0.0.0/0"
+      from_port  = 80
+      to_port    = 80
+    }
+  ]
+
+  	egress {
+		protocol = "tcp"
+		rule_no = 130
+		action = "allow"
+		cidr_block = "0.0.0.0/0"
+		from_port = 1024
+		to_port = 65535
+	}
+
+	# allow 27017 to private subnet
+	egress {
+		protocol = "tcp"
+		rule_no = 140
+		action = "allow"
+		cidr_block = "10.104.2.0/24"
+		from_port = 27017
+		to_port = 27017
+	}
+
 
   tags = {
     Name = "eng89_brittany"

@@ -18,6 +18,6 @@ variable "app_ami" {
     default = ""
 }
 
-variable "db_ami" {
+variable "vpc_id" {
     default = ""
 }
