@@ -164,11 +164,13 @@ To configure your VPC, several resources are required:
 - [Subnet](https://github.com/brittanyharrison/aws_VPC#step-3-creating-a-subnet)
 - [Route Table](https://github.com/brittanyharrison/aws_VPC#step-4-creating-a-route-table) 
 - [Network ACL](https://github.com/brittanyharrison/aws_VPC/blob/main/README.md#step-4-creating-network-acl)
+
 Inbound rules:
 ![img](img/Nacl_inbound_rules_public.png)
 Outbound rules:
 ![img](img/nacl_outbound_rules_public.png)
 - [Security Groups](https://github.com/brittanyharrison/aws_VPC/blob/main/README.md#step-5-creating-security-groups)
+
 Inbound rules:
 ![img](img/sg_inbound.png)
 
@@ -211,12 +213,12 @@ resource "aws_subnet" "eng89_brittany_subnet_public" {
 resource "aws_route_table" "eng89_brittany_rt" {
   vpc_id = aws_vpc.eng89_brittany_vpc.id
 
-  route = [
+  route 
     {
       cidr_block = "0.0.0.0/0"
       gateway_id = aws_internet_gateway.eng89_brittany_rt.id
     }
-  ]
+
 
   tags = {
     Name = "eng89_brittany_rt"
