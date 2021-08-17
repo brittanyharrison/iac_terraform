@@ -48,7 +48,7 @@ variable "db_sg"{
     default = "sg-0698bb1ccfd7a46fc"
 }
 
-variable "db_private_ip" {
-    default = "10.104.2.0"
+variable "mongodb_private_ip" {
+    default = "mongodb://10.104.2.175:27017/posts"
   
 }
